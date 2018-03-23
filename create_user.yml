@@ -1,0 +1,8 @@
+---
+  - hosts: test
+    become: yes
+    become_method: sudo
+    become_user: root
+
+
+# Linux host password hash rules, please refer to http://docs.ansible.com/ansible/latest/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
