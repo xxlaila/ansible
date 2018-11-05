@@ -1,0 +1,8 @@
+---
+- hosts: "{{ project_name }}"
+  user: "{{ user }}"
+  vars_files:
+    - ./inventories/{{ env }}/group_vars/global.yml
+    - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+  roles:
+    - k8s
