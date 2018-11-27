@@ -3,6 +3,10 @@
     template: src=kubernetes.repo dest=/etc/yum.repos.d/kubernetes.repo
     become: yes
 
+  - name: Add docker yum repo
+    yum_repository: name=epel description=EPEL YUM repo baseurl=https://download.docker.com/linux/centos/docker-ce.repo enabled=yes
+    become: yes
+
   - name: repo clean
     command: yum clean all warn=False
     become: yes
@@ -16,7 +20,7 @@
 
   - name: Configure forwarding requests
     template: src={{ item }} dest="/etc/sysctl.d/"
-    with_first_found:
+    with_item:
       - "k8s.conf"
       - "k8s.sh"
     become: yes
@@ -48,28 +52,28 @@
     become: yes
 
   - name: Pull k8s related image
-    command: sh /etc/sysctl.d/k8s.sh
+    command: sudo sh /etc/sysctl.d/k8s.sh
     become: yes
 
   - name: Initialize the relevant image
     command: kubeadm init --kubernetes-version=v1.11.0 --pod-network-cidr=10.244.0.0/16
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     register: info
     become: yes
 
   - name: Print kubeadm info
     debug: var=result verbosity=2
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Configure kubectl authentication information
     command: export KUBECONFIG=/etc/kubernetes/admin.conf
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Configuration is permanently valid
     command: echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> /etc/profile
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Install the flannel network
@@ -82,7 +86,7 @@
       - /usr/share/oci-umount/oci-umount.d
       - /run/flannel/
       - /opt/kubernetes
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Copy filannel config
@@ -90,20 +94,20 @@
       src: "{{ item.file }}"
       dest: "{{ item.dir }}/{{ item.file }}"
     with_items:
-      - '{ file: '10-flannel.conf', dir: '/etc/cni/net.d/' }'
-      - '{ file: 'subnet.env', dir: '/run/flannel/' }'
-      - '{ file: 'flannel.yml', dir: '/opt/kubernetes' }'
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+      - { file: '10-flannel.conf', dir: '/etc/cni/net.d/' }
+      - { file: 'subnet.env', dir: '/run/flannel/' }
+      - { file: 'flannel.yml', dir: '/opt/kubernetes' }
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Create a flannel network
     command: kubectl create -f /opt/k8s/flannel.yml
-    when: ansible_defaults_ipv4.address == "172.21.17.4"
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Node joins k8s
     command: "{{ info.stdout_lines }}"
-    when: ansible_defaults_ipv4.address != "172.21.17.4"
+    when: ansible_default_ipv4.address != "172.21.17.4"
     become: yes
 
   - name: K8s Dashboard configuration
@@ -114,14 +118,16 @@
     become: yes
 
   - name: Create kube-system
-    command: kubectl -n kube-system create -f /opt/k8s/kubernetes-dashboard/"{{ item }}"
+    command: kubectl -n kube-system create -f /opt/k8s/kubernetes-dashboard/{{ item }}
     with_items:
       - heapster-rbac.yaml
       - heapster.yaml
       - kubernetes-dashboard.yaml
       - kubernetes-dashboard-admin.rbac.yaml
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
 
   - name: Start container
     command: kubectl -f /opt/k8s/kubernetes-dashboard/dashboard-admin.yaml create
+    when: ansible_default_ipv4.address == "172.21.17.4"
     become: yes
