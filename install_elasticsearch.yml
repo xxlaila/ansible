@@ -1,8 +1,10 @@
 ---
+#this playbook is all the whole elasticsearch
 - hosts: "{{ project_name }}"
-  user: "{{ user }}"
+  user: otoman
   vars_files:
     - ./inventories/{{ env }}/group_vars/global.yml
     - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
   roles:
-    - k8s
+    - jar11
+    - elasticsearch

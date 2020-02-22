@@ -1,0 +1,8 @@
+---
+  el_user: elasticsearch
+  el_version: 5.6.10
+  el_data_dir: /opt/elasticsearch
+
+  minimum_master_nodes: 2
+  cluster_name: elasticsearch
+  el_memen: 4

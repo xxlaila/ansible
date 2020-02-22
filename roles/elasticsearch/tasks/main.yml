@@ -1,0 +1,82 @@
+---
+  - name: Download and install {{ el_user }} the public signing key
+    command: rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    become: yes
+
+  - name: Add {{ el_user }} RPM repository
+    template:
+      src: "{{ el_user }}.repo"
+      dest: "/etc/yum.repos.d/{{ el_user }}.repo"
+    become: yes
+
+  - name: repo clean
+    command: yum clean all warn=False
+    become: yes
+
+  - name: repo makecache
+    command: yum makecache warn=False
+    become: yes
+
+  - name: Install {{ el_user }} package
+    yum:
+      name: "{{ el_user }}"
+      state: present
+    become: yes
+
+  - name: Create {{ el_user }} data and logs
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+    with_items:
+      - "{{ el_data_dir }}"
+    become: yes
+
+  - name: update {{ el_user }} start boot jvm
+    template:
+      src: "{{ item }}"
+      dest: "/etc/{{ el_user }}/{{ item }}"
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+    with_items:
+      - "elasticsearch.yml"
+      - "jvm.options"
+    become: yes
+  - name: New {{ el_user}} parameter file
+    lineinfile:
+      path: /etc/sysctl.conf
+      line: 'vm.max_map_count=655350'
+    become: yes
+
+  - name: Modify system user memory limits
+    lineinfile:
+      path: /etc/security/limits.conf
+      line: "{{ item }}"
+    with_items:
+      - "elasticsearch soft memlock unlimited"
+      - "elasticsearch hard memlock unlimited"
+    become: yes
+
+  - name: Loading system variables
+    command: sysctl -p
+    become: yes
+
+  - name: Modify {{ el_user }} boot start config files
+    replace:
+      dest: /lib/systemd/system/{{ el_user }}.service
+      regexp: "DATA_DIR=/var/lib"
+      replace: "DATA_DIR=/opt"
+    become: yes
+
+  - name: Reload configuration boot configuration
+    command: systemctl daemon-reload
+    become: yes
+
+  - name: start boot {{ el_user }}
+    service:
+      name: "{{ el_user }}"
+      state: started
+      enabled: yes
+    become: yes
