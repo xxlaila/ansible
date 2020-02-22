@@ -1,2 +1,5 @@
 ---
   env: test
+
+  supervisord_name: supervisord
+  supervisord_dir: /etc/supervisord.d/

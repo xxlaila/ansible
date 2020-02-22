@@ -1,0 +1,17 @@
+---
+
+- name: install {{ supervisord_name }}
+  yum: name=supervisor state=installed
+  become: yes
+
+- name: update {{ supervisord_name }} config file
+  template: src=supervisord.conf dest=/etc/supervisord.conf
+  become: yes
+
+- name: mkdir {{ supervisord_name }} directory
+  file: path=/etc/supervisord.d state=directory
+  become: yes
+
+- name: supervisor service
+  service: name=supervisord state=started enabled=yes
+  become: yes
