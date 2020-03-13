@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+LOGFILE="/tmp/haproxy.log"
+date >> $LOGFILE
+
+if [ $(ps -C haproxy --no-header | wc -l) -eq 0 ]; then
+    echo "fail: check_haproxy status" >> $LOGFILE
+
+    echo "start haproxy service" >> $LOGFILE
+    system start haproxy
+    sleep 3
+
+    if [ $(ps -C haproxy --no-header | wc -l) -eq 0 ]; then
+        systemctl stop keepalived
+    fi
+
+    exit 1
+
+else
+    echo "success: check_haproxy status" >> $LOGFILE
+    exit 0
+fi

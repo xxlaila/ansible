@@ -1,0 +1,10 @@
+---
+  - name: restart keepalived or haproxy
+    systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: restarted
+    with_items:
+        - keepalived
+        - haproxy
+    become: yes

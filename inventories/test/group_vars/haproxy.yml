@@ -1,0 +1,19 @@
+---
+  rpm_list:
+    - keepalived
+    - haproxy
+
+  VIP: 172.21.1.1
+  PORT: 10086
+
+  haproxy_servers:
+    - frontend: 'redis'
+        bind_port: 6379
+        backend:
+          - address: 172.21.16.33:6379
+    - frontend: 'mysql'
+        bind_port: 3306
+        backend:
+          - address:
+            - 172.21.16.34:3306
+            - 172.21.16.35:3306

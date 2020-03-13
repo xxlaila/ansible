@@ -1,10 +1,9 @@
 ---
-#this playbook is all the whole elasticsearch
+# this playbook is all the whole haproxy keepalived
 - hosts: "{{ project_name }}"
   user: user
   vars_files:
     - ./inventories/{{ env }}/group_vars/global.yml
     - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
   roles:
-    - jar11
-    - elasticsearch
+    - haproxy

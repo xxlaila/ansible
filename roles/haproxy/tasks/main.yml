@@ -1,0 +1,29 @@
+---
+  - name: Install haproxy or keepalived
+    yum: name={{ item }} state=present
+    with_items: "{{ rpm_list }}"
+    become: yes
+
+  - name: Send HA or Kee configuration file
+    template: src={{ item.src }} dest={{ item.dest }}
+    with_items:
+    - { src: 'keepalived.conf.j2', dest: '/etc/keepalived/keepalived.conf'}
+    - { src: 'check_haproxy.sh.j2', dest: '/etc/keepalived/check_haproxy.sh'}
+    - { src: 'haproxy.cfg.j2', dest: '/etc/haproxy/haproxy.cfg'}
+    become: yes
+    notify: restart keepalived or haproxy
+
+  - name: ping test {{ VIP }}
+    net_ping:
+      dest: {{ VIP }}
+      count: 5
+      state: present
+    connection: local
+
+  - name: Wait for vip's port 10086 to be actively connected, do not close within 5 seconds
+    wait_for:
+      host: "{{ VIP }}"
+      port: 10086
+      delay: 5
+    connection: local
+

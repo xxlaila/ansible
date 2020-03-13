@@ -1,0 +1,35 @@
+! Configuration File for keepalived
+global_defs {
+    enable_script_security
+}
+
+vrrp_script haproxy-check {
+    user root
+    script "/bin/bash /etc/keepalived/check_haproxy.sh"
+    interval 3
+    weight -2
+    fall 10
+    rise 2
+}
+
+vrrp_instance haproxy-vip {
+    state BACKUP
+    priority 101
+    interface eth0
+    virtual_router_id 47
+    advert_int 2
+    nopreempt
+    dont_track_primary
+    authentication {
+      auth_type PASS
+      auth_pass 1111
+    }
+
+    virtual_ipaddress {
+        {{ VIP }}
+    }
+
+    track_script {
+        haproxy-check
+    }
+}
