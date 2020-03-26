@@ -6,4 +6,4 @@
     - ./inventories/{{ env }}/group_vars/global.yml
     - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
   roles:
-    - haproxy
+    - HA

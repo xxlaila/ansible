@@ -1,0 +1,10 @@
+---
+
+  - host: all
+    gather_facts: no
+    roles:
+      - { role: kernel }                    # 升级内核
+      #- { role: kernel, tags: uninstall }  # 更新内核以后，重启卸载内核
+
+
+  # 还未执行经过验证

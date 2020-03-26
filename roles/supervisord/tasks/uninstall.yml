@@ -1,0 +1,7 @@
+---
+  - name: Remove RPM packages for old kernels
+    yum:
+      name:
+        - kernel-3.10.0.*
+      state: absent
+    become: yes
