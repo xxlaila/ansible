@@ -1,6 +1,7 @@
 ---
 
   - host: all
+    user: user
     gather_facts: no
     roles:
       - { role: kernel }                    # 升级内核
