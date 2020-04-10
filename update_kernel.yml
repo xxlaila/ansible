@@ -1,11 +1,12 @@
 ---
 
-  - host: all
-    user: user
+  - hosts: "{{ project_name }}"
+    user: 
     gather_facts: no
+    vars_files:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
     roles:
-      - { role: kernel }                    # 升级内核
-      #- { role: kernel, tags: uninstall }  # 更新内核以后，重启卸载内核
+     # - { role: kernel, tags: kernel }                    # 升级内核
+      - { role: kernel, tags: uninstall}                   # 更新内核以后，重启卸载内核
 
-
-  # 还未执行经过验证

@@ -1,62 +1,91 @@
 ---
-
   - name: View the current system kernel version
     command: uname -a
     register: mymotd
+    tags: kernel
     become: yes
 
   - name: print system kernel version
     debug:
       var: mymotd.stdout
-      verbosity: 2
+      verbosity: 0
+    tags: kernel
+    become: yes
+
+  - name: Yum update
+    yum:
+      name: "*"
+      state: latest
+    tags: kernel
     become: yes
 
   - name: Import the public key of the ELRepo repository
-    rpm:
+    rpm_key:
       state: present
       key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+    tags: kernel
     become: yes
 
   - name: Install the yum source of the ELRepo repository
-    command: rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm
-    become: yes
-
-  - name: Install elrepo-kernel metadata
-    command: yum --disablerepo=\* --enablerepo=elrepo-kernel repolist
+    yum:
+       name: http://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm
+       state: present
+    tags: kernel
     become: yes
 
   - name: Install long-term support version kernel-lt.x86_64
-    command: yum --disablerepo=\* --enablerepo=elrepo-kernel -y install kernel-lt.x86_64
+    yum:
+      name:
+        - kernel-lt
+        - kernel-lt-devel
+      state: present
+      disablerepo: "*"
+      enablerepo: "elrepo-kernel"
+    tags: kernel
     become: yes
 
   - name: Uninstall the old kernel toolkit
-    command: yum -y remove kernel-tools-libs.x86_64 kernel-tools.x86_64
+    yum:
+      name:
+        - kernel-tools-libs
+        - kernel-tools
+      state: absent
+    tags: kernel
     become: yes
 
   - name: Install a new version of the toolkit
-    command: yum --disablerepo=\* --enablerepo=elrepo-kernel -y install kernel-lt-tools.x86_64
+    yum:
+      name: kernel-lt-tools
+      state: present
+      disablerepo: "*"
+      enablerepo: "elrepo-kernel"
+    tags: kernel
     become: yes
 
   - name: View the current actual boot kernel version
     command: grub2-editenv list
     register: actual
+    tags: kernel
     become: yes
 
   - name: print actual boot kernel version
     debug:
       var: actual.stdout
-      verbosity: 2
+      verbosity: 0
+    tags: kernel
     become: yes
 
   - name: View all available kernels on the system
-    shell: awk -F\' '$1=="menuentry " {print i++ " : " $2}' /etc/grub2.cfg
+    shell: grub2-set-default  0 && grub2-mkconfig -o /etc/grub2.cfg
     register: available
+    tags: kernel
     become: yes
 
   - debug: Print all available kernels on the system
     debug:
       var: available.stdout
-      verbosity: 2
+      verbosity: 0
+    tags: kernel
     become: yes
 
   - name: Set the new kernel as the default version of grub2
@@ -66,18 +95,23 @@
   - name: Generate grub configuration file
     command: grub2-mkconfig -o /boot/grub2/grub.cfg
     register: grub2
+    tags: kernel
     become: yes
 
   - name: Print the grub configuration file
     debug:
       var: grub2.stdout
-      verbosity: 2
+      verbosity: 0
+    tags: kernel
     become: yes
 
   - name: Restart server
-    command: reboot
+    shell: sleep 2 && shutdown -r now "reboot"
+    async: 1
+    poll: 0
+    ignore_errors: yes
+    tags: kernel
     become: yes
 
   - include_tasks: uninstall.yml
-    tags:
-      - uninstall
+    tags: uninstall
