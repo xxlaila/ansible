@@ -8,9 +8,9 @@ bootstrap.memory_lock: false
 network.host: 0.0.0.0
 http.port: 9200
 transport.tcp.port: 9300
-discovery.zen.ping.unicast.hosts: {%if groups['elasticsearch'] is not defined %}{% for host in ansible_play_hosts %}http://{{ hostvars[host].inventory_hostname }}:9200{% if not loop.last %},{% endif %}{% endfor %}{% else %}{% for host in groups['elasticsearch'] %}http://{{ hostvars[host].inventory_hostname }}:9200{% if not loop.last %},{% endif %}{% endfor %}{% endif %}
+discovery.zen.ping.unicast.hosts: [{%if groups['elasticsearch'] is not defined %}{% for host in ansible_play_hosts %}{{ hostvars[host].inventory_hostname }}:9200{% if not loop.last %},{% endif %}{% endfor %}{% else %}{% for host in groups['elasticsearch'] %}{{ hostvars[host].inventory_hostname }}:9200{% if not loop.last %},{% endif %}{% endfor %}{% endif %}]
 
 discovery.zen.minimum_master_nodes: {{ minimum_master_nodes }}
-xpack.security.enabled: false
+#xpack.security.enabled: false
 http.cors.enabled: true
 http.cors.allow-origin: "*"
