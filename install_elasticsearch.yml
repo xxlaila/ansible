@@ -7,4 +7,5 @@
     - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
   roles:
     - jar11
+    - system
     - elasticsearch

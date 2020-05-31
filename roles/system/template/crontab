@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+# For details see man 4 crontabs
+
+0 */2 * * * /usr/sbin/ntpdate ntp.ubuntu.com >/dev/null 2>&1 ; /sbin/hwclock --systohc
