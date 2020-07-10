@@ -1,0 +1,27 @@
+---
+  - host: Allnode
+    roles:
+      - system
+      - elk
+    vars:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+      - el_memen: 1g
+
+  - host: data
+    roles:
+      - system
+      - elk
+      vars:
+        - ./inventories/{{ env }}/group_vars/global.yml
+        - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+        - el_memen: 1g
+
+  - host: ingest
+    roles:
+      - system
+      - elk
+      vars:
+        - ./inventories/{{ env }}/group_vars/global.yml
+        - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+        - el_memen: 1g

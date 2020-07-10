@@ -1,0 +1,23 @@
+[master]
+1.1.1.1 hostname=a
+1.1.1.2 hostname=b
+1.1.1.3 hostname=c
+[data]
+1.1.1.1 hostname=a
+1.1.1.2 hostname=b
+1.1.1.3 hostname=c
+
+[ingest]
+1.1.1.1 hostname=a
+1.1.1.2 hostname=b
+1.1.1.3 hostname=
+
+[Master:children]
+master
+
+[Allnode:children]
+Master
+node
+ingest
+
+

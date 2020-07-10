@@ -1,0 +1,32 @@
+---
+
+  - name: install elasticsearch
+    block:
+    - name: copy elasticsearch rpm
+      copy:
+        src: "../files/elasticsearch-7.4.1-x86_64.rpm"
+        dest: "/tmp/elasticsearch-7.4.1-x86_64.rpm"
+    - name: install elasticsearch
+      yum:
+        name: "/tmp/elasticsearch-7.4.1-x86_64.rpm"
+        state: installed
+    become: yes
+
+  - name: Create {{ el_user }} data and logs
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ el_user }}"
+        group: "{{ el_user }}"
+        mode: 0755
+      with_items:
+        - "{{ path.logs }}"
+      become: yes
+
+  - name: copy config elasticsearch.yml
+    template:
+      src: "../templates/elasticsearch.yml.j2"
+        dest: "/etc/elasticsearch/elasticsearch.yml"
+        backup: yes
+    become: yes
+    notify: restart elasticsearch

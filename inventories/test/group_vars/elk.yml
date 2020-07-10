@@ -1,0 +1,13 @@
+---
+
+  - el_user: elasticsearch
+  - cluster_name: myelk01
+  - path:
+      - logs: /home/data/logs/elasticsearch
+
+  - disks:
+      /dev/sdb: /data1
+      /dev/sdc: /data2
+      /dev/sdd: /data3
+      /dev/sde: /data4
+

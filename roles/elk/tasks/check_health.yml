@@ -1,0 +1,10 @@
+---
+  - wait_for:
+        host: "0.0.0.0"
+        port: "{{ item }}"
+        timeout: 120
+        with_items: ["39900"]
+
+  - debug:
+      msg:
+        - "Elasticsearch has been installed"

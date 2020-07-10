@@ -1,0 +1,26 @@
+cluster.name: {{ cluster_name }}
+node.name: {{ inventory_hostname }}
+node.master: false
+node.data: true
+node.ingest: false
+node.attr.tag: hot
+path.data: {{path.data}}
+path.logs: {{path.logs}}
+bootstrap.memory_lock: true
+bootstrap.system_call_filter: false
+network.host: 0.0.0.0
+http.port: 39900
+discovery.seed_hosts: {{groups['elasticsearch'] | to_json}}
+cluster.initial_master_nodes: {{groups['elasticsearch'] | to_json}}
+discovery.zen.ping_timeout: 30s
+discovery.zen.fd.ping_timeout: 120s
+discovery.zen.fd.ping_retries: 6
+discovery.zen.fd.ping_interval: 30s
+cluster.routing.allocation.disk.watermark.low: 85%
+discovery.zen.minimum_master_nodes: 2
+http.enabled: false
+transport.tcp.compress: true
+transport.tcp.connect_timeout: 60s
+transport.ping_schedule: 60s
+action.auto_create_index: true
+thread_pool.bulk.queue_size: 1000

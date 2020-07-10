@@ -1,0 +1,30 @@
+---
+  - name: Copy {{ el_user }} master node config files
+    template:
+      src: "{{ item }}"
+      dest: /etc/{{ el_user }}/config/{{ item }}
+      owner: {{ el_user }}
+      group: {{ el_user }}
+    with_items:
+      - "{{ el_user }}.yml.j2"
+      - jvm.options
+    when: inventory_hostname in groups['master']
+    become: yes
+
+  - name: Copy {{ el_user }} data node config files
+    template:
+      src: hos_{{ el_user }}.yml
+      dest: /etc/{{ el_user }}/{{ el_user }}.yml
+      owner: {{ el_user }}
+      group: {{ el_user }}
+    when: inventory_hostname in groups['data']
+    become: yes
+
+  - name: Copy {{ el_user }} ingest config files
+    template:
+      src: hos_{{ el_user }}.yml
+      dest: /etc/{{ el_user }}/{{ el_user }}.yml
+      owner: {{ el_user }}
+      group: {{ el_user }}
+    when: inventory_hostname in groups['ingest']
+    become: yes
