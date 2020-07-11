@@ -2,19 +2,19 @@
 
   - name: Create {{ el_user }} data directory
     file:
-      path: "{{ item.value }}/es"
+      path: "{{ item.value }}"
       state: directory
       owner: "{{ el_user }}"
       group: "{{ el_user }}"
       mode: 0755
-    with_dict: "{{ disks }}"
+    with_dict: "{{ disks_cold }}"
     become: yes
 
   - name: Umount datanode disks
     mount:
       path: "{{ item.value }}"
       state: absent
-    with_dict: "{{ disks }}"
+    with_dict: "{{ disks_cold }}"
     become: yes
 
   - name: Format datanode disks
@@ -22,7 +22,7 @@
       fstype: xfs
       dev: "{{ item.key }}"
       force: yes
-    with_dict: "{{ disks }}"
+    with_dict: "{{ disks_cold }}"
     become: yes
 
   - name: Mount datanode disks
@@ -32,5 +32,5 @@
       fstype: xfs
       opts: "defaults,noatime,nobarrier"
       state: mounted
-    with_dict: "{{ disks }}"
+    with_dict: "{{ disks_cold }}"
     become: yes

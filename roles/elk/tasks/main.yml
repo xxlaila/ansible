@@ -1,0 +1,16 @@
+- include: elkNotName.yml
+
+- include: im_disk.yml
+  when: inventory_hostname in groups['master'] or inventory_hostname in groups['ingest']
+
+- include: data_disk.yml
+  when: inventory_hostname in groups['hot-data']
+
+- include: cold_disk.yml
+  when: inventory_hostname in groups['cold-data']
+
+- include: es_install.yml
+
+- include: es_config.yml
+
+- include: check_health.yml

@@ -1,27 +1,37 @@
 ---
-  - host: Allnode
+  - hosts: "{{ run | default('master') }}"
+    #- hosts: "{{ run | default('Allnode') }}"
     roles:
       - system
       - elk
     vars:
       - ./inventories/{{ env }}/group_vars/global.yml
       - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
-      - el_memen: 1g
+      - el_memen: 1
 
-  - host: data
+  - host: "{{ run | default('ingest') }}"
     roles:
       - system
       - elk
       vars:
         - ./inventories/{{ env }}/group_vars/global.yml
         - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
-        - el_memen: 1g
+        - el_memen: 1
 
-  - host: ingest
+  - host: "{{ run | default('hot-data') }}"
     roles:
       - system
       - elk
       vars:
         - ./inventories/{{ env }}/group_vars/global.yml
         - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
-        - el_memen: 1g
+        - el_memen: 1
+
+  - host: "{{ run | default('cold-data') }}"
+      roles:
+        - system
+        - elk
+      vars:
+        - ./inventories/{{ env }}/group_vars/global.yml
+        - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+        - el_memen: 1

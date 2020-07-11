@@ -3,11 +3,22 @@
   - el_user: elasticsearch
   - cluster_name: myelk01
   - path:
-      - logs: /home/data/logs/elasticsearch
+      logs: /home/data/logs/elasticsearch
+      data: /home/data/elasticsearch
 
-  - disks:
-      /dev/sdb: /data1
-      /dev/sdc: /data2
-      /dev/sdd: /data3
-      /dev/sde: /data4
+  - disks_data:
+      /dev/vdb: /data
+      /dev/vdc: /data1
+      /dev/vdd: /data2
+      /dev/vde: /data3
 
+  - disks_IM:
+      /dev/vdb: /home/data
+
+  - disks_cold:
+      /dev/vdb: /data
+      /dev/vdc: /data1
+      /dev/vdd: /data2
+      /dev/vde: /data3
+      /dev/vdf: /data4
+      /dev/vdg: /data5

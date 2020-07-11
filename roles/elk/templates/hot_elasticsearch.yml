@@ -1,9 +1,11 @@
 cluster.name: {{ cluster_name }}
 node.name: {{ hostname | lower }}
 node.master: false
-node.data: false
-node.ingest: true
-path.data: {{ path.data }}
+node.data: true
+node.ingest: false
+node.attr.tag: hot
+path.data: {% for key, value in disks_data.iteritems() %}{{ value }}{% if not loop.last %},{% endif %}{% endfor %}
+
 path.logs: {{ path.logs }}
 bootstrap.memory_lock: true
 bootstrap.system_call_filter: false
@@ -23,3 +25,5 @@ transport.tcp.connect_timeout: 60s
 transport.ping_schedule: 60s
 action.auto_create_index: true
 thread_pool.bulk.queue_size: 1000
+
+

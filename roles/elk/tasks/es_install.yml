@@ -12,21 +12,25 @@
         state: installed
     become: yes
 
+  - name: Delete {{ el_user }} rpm package
+    file:
+
   - name: Create {{ el_user }} data and logs
       file:
-        path: "{{ item }}"
+        name: "{{ item }}"
         state: directory
         owner: "{{ el_user }}"
         group: "{{ el_user }}"
         mode: 0755
       with_items:
         - "{{ path.logs }}"
+        - "{{ path.data }}"
       become: yes
 
-  - name: copy config elasticsearch.yml
-    template:
-      src: "../templates/elasticsearch.yml.j2"
-        dest: "/etc/elasticsearch/elasticsearch.yml"
-        backup: yes
-    become: yes
-    notify: restart elasticsearch
+#  - name: copy config elasticsearch.yml
+#    template:
+#      src: "elasticsearch.yml.j2"
+#      dest: "/etc/elasticsearch/elasticsearch.yml"
+#      backup: yes
+#    become: yes
+

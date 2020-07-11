@@ -14,3 +14,4 @@
     - nfs-utils
     - sysstat
     - git
+    - jq

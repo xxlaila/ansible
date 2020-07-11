@@ -18,6 +18,10 @@
     become: yes
     when: selinux_status.stdout == "Enforcing"
 
+  - name: ulimit open file Effective in time
+    command: sysctl -w "fs.file-max=655360"
+    become: yes
+
   - name: ulimit config file push
     template: src="20-nofile.conf" dest="/etc/security/limits.d/"
     become: yes

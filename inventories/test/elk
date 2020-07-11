@@ -1,23 +1,22 @@
+[hot-data]
+172.16.16.6 hostname=elk-host-data-01
+172.16.16.9 hostname=elk-host-data-02
+172.16.16.13 hostname=elk-host-data-03
+
+[cold-data]
+172.16.16.232 hostname=elk-cold-data-01
+
+
 [master]
-1.1.1.1 hostname=a
-1.1.1.2 hostname=b
-1.1.1.3 hostname=c
-[data]
-1.1.1.1 hostname=a
-1.1.1.2 hostname=b
-1.1.1.3 hostname=c
+172.16.24.7 hostname=elk-master-01  clusterName=elk-master-01.xxlaila.cn
+172.16.24.11 hostname=elk-master-02 clusterName=elk-master-02.xxlaila.cn
+172.16.24.12 hostname=elk-master-03 clusterName=elk-master-03.xxlaila.cn
 
 [ingest]
-1.1.1.1 hostname=a
-1.1.1.2 hostname=b
-1.1.1.3 hostname=
-
-[Master:children]
-master
+172.16.24.16 hostname=elk-ingest-01
 
 [Allnode:children]
-Master
-node
+master
+hot-data
+cold-data
 ingest
-
-
