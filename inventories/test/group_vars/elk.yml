@@ -2,6 +2,7 @@
 
   - el_user: elasticsearch
   - cluster_name: myelk01
+  - el_version: 7.8.0-x86_64
   - path:
       logs: /home/data/logs/elasticsearch
       data: /home/data/elasticsearch

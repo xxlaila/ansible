@@ -1,4 +1,16 @@
 ---
+  - name: Create {{ el_user }} data and logs
+    file:
+      name: "{{ item }}"
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+    with_items:
+      - "{{ path.logs }}"
+      - "{{ path.data }}"
+    become: yes
+
   - name: Copy {{ el_user }} master node config files
     template:
       src: "{{ el_user }}.yml"
