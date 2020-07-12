@@ -1,7 +1,7 @@
 [hot-data]
-172.16.16.6 hostname=elk-host-data-01
-172.16.16.9 hostname=elk-host-data-02
-172.16.16.13 hostname=elk-host-data-03
+172.16.16.6 hostname=elk-hot-data-01
+172.16.16.9 hostname=elk-hot-data-02
+172.16.16.13 hostname=elk-hot-data-03
 
 [cold-data]
 172.16.16.232 hostname=elk-cold-data-01

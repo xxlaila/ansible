@@ -31,8 +31,7 @@
     become: yes
 
   - name: install system rpm
-    yum: name={{ item }} state=present
-    with_items: "{{ system_rpm_list }}"
+    yum: name={{ system_rpm_list }} state=present
     become: yes
 
   - name: crontab config file

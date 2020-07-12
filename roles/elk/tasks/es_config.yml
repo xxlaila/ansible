@@ -22,7 +22,7 @@
 
   - name: Copy {{ el_user }} data node config files
     template:
-      src: "hos_{{ el_user }}.yml"
+      src: "hot_{{ el_user }}.yml"
       dest: /etc/{{ el_user }}/{{ el_user }}.yml
       owner: "{{ el_user }}"
       group: "{{ el_user }}"
