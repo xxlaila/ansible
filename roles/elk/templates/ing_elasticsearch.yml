@@ -18,7 +18,8 @@ discovery.zen.fd.ping_retries: 6
 discovery.zen.fd.ping_interval: 30s
 cluster.routing.allocation.disk.watermark.low: 85%
 discovery.zen.minimum_master_nodes: 2
-http.cors.enabled: false
+http.cors.enabled: true
+http.cors.allow-origin: "*"
 transport.tcp.compress: true
 transport.tcp.connect_timeout: 60s
 transport.ping_schedule: 60s
