@@ -53,8 +53,8 @@
       regexp: "{{ item.key }}"
       line: "{{ item.vaule }}"
     with_items:
-      - { 'key': 'Xms1g', 'vaule': 'Xms{{ el_memen }}g' }
-      - { 'key': 'Xmx1g', 'vaule': 'Xmx{{ el_memen }}g' }
+      - { 'key': '-Xms1g', 'vaule': '-Xms{{ el_memen }}g' }
+      - { 'key': '-Xmx1g', 'vaule': '-Xmx{{ el_memen }}g' }
     when: ansible_play_hosts | intersect(groups['Allnode'])
     become: yes
     notify: restart elasticsearch

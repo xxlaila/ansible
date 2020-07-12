@@ -22,4 +22,3 @@ transport.tcp.compress: true
 transport.tcp.connect_timeout: 60s
 transport.ping_schedule: 60s
 action.auto_create_index: true
-thread_pool.bulk.queue_size: 1000
