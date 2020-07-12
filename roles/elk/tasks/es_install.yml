@@ -8,7 +8,7 @@
         dest: "/tmp/{{ el_user }}-{{ el_version }}.rpm"
     - name: install elasticsearch
       yum:
-        name: "/tmp/elasticsearch-7.4.1-x86_64.rpm"
+        name: "/tmp/{{ el_user }}-{{ el_version }}.rpm"
         state: installed
     become: yes
 
@@ -18,6 +18,11 @@
       state: absent
     become: yes
 
+  - name: Copy hosts files /etc/hosts
+    template:
+      src: "hosts"
+      dest: /etc/hosts
+    become: yes
 #  - name: Create {{ el_user }} data and logs
 #      file:
 #        name: "{{ item }}"

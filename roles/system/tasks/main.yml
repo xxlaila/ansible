@@ -26,6 +26,10 @@
     template: src="20-nofile.conf" dest="/etc/security/limits.d/"
     become: yes
 
+  - name: sysctl limits.d files
+    command: sysctl -p "/etc/security/limits.d/20-nproc.conf"
+    become: yes
+
   - name: install system rpm
     yum: name={{ item }} state=present
     with_items: "{{ system_rpm_list }}"

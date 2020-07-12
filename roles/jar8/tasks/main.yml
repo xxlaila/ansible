@@ -1,0 +1,7 @@
+---
+- name: install java 1.8
+  yum: name="{{ item }}" state=installed
+  with_items:
+    - java-1.8.0-openjdk.x86_64
+    - java-1.8.0-openjdk-devel.x86_64
+  become: yes
