@@ -13,7 +13,6 @@ network.host: 0.0.0.0
 http.port: 39900
 discovery.seed_hosts: [{% for host in groups['master'] %}"{{ hostvars[host].clusterName }}"{% if not loop.last %}, {% endif %}{% endfor %}]
 cluster.initial_master_nodes: [{% for host in groups['master'] %}"{{ hostvars[host].hostname }}"{% if not loop.last %}, {% endif %}{% endfor %}]
-#discovery.zen.ping.unicast.hosts: [{% if group['master'] is not defined %}{% for host in ansible_play_hosts %}"{{ hostvars[host].hostname }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}]
 discovery.zen.ping_timeout: 30s
 discovery.zen.fd.ping_timeout: 120s
 discovery.zen.fd.ping_retries: 6

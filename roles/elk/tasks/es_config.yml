@@ -11,6 +11,17 @@
       - "{{ path.data }}"
     become: yes
 
+  - name: Create {{ el_user }} data dirctory
+    file:
+      path: "{{ item.value }}/{{ el_user }}"
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+      with_dict: "{{ disks_data }}"
+    when: inventory_hostname in groups['hot-data'] or inventory_hostname in groups['cold-data']
+    become: yes
+
   - name: Copy {{ el_user }} master node config files
     template:
       src: "{{ el_user }}.yml"

@@ -22,11 +22,12 @@
       number: 1
       state: present
       label: gpt
+
     register: status
     with_dict: "{{ disks_data }}"
     become: yes
 
-  - name: haha
+  - name: Format the disk as xfs
     filesystem:
       fstype: xfs
       dev: "{{ item.item.key }}1"
@@ -38,6 +39,7 @@
     command: blkid "{{ item.key }}1"
     with_dict: "{{ disks_data }}"
     register: result
+    become: yes
 
   - name: print disk uuid or disk path
     debug:
@@ -49,14 +51,14 @@
       dest: '/etc/fstab'
       line: "{{ item }}"
     with_items:
-      - "{% for i in result.results %} { i.stdout.strip().split(' ')[1] }} {{ i.tem.value }}\txfs\tdefaults\t1 1\n {% endfor %}"
+      - "{% for i in result.results %} {{ i.stdout.strip().split(' ')[1] }} {{ i.tem.value }}\txfs\tdefaults\t1 1\n {% endfor %}"
     become: yes
 
   - name: Modify fstab parameters
     replace:
       path: '/etc/fstab'
-      regepxp: "{{ item }}"
-      replace:
+      regexp: "{{ item }}"
+      replace: ''
     with_items:
       - '"'
       - '^\s+'
