@@ -42,6 +42,9 @@
     template: src="./root/.bashrc" dest="/root/" mode=0644 owner=root group=root
     become: yes
 
+  - name
+  -
+
   - name: push login info
     template: src="motd" dest="/etc/motd"
     become: yes

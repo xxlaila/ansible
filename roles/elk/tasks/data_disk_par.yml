@@ -1,0 +1,67 @@
+---
+  - name: Create {{ el_user }} data directory
+    file:
+      path: "{{ item.value }}"
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+    with_dict: "{{ disks_data }}"
+    become: yes
+
+  - name: Umount datanode disks
+    mount:
+      path: "{{ item.value }}"
+      state: absent
+    with_dict: "{{ disks_data }}"
+    become: yes
+
+  - name: Format datanode disks
+    parted:
+      device: "{{ item.key }}"
+      number: 1
+      state: present
+      label: gpt
+    register: status
+    with_dict: "{{ disks_data }}"
+    become: yes
+
+  - name: haha
+    filesystem:
+      fstype: xfs
+      dev: "{{ item.item.key }}1"
+      force: yes
+    with_items: "{{ status.results }}"
+    become: yes
+
+  - name: disk uuid
+    command: blkid "{{ item.key }}1"
+    with_dict: "{{ disks_data }}"
+    register: result
+
+  - name: print disk uuid or disk path
+    debug:
+      msg: "{% for i in result.results %} {{ i.stdout.split(' ')[1] }} {{ i.tem.value }} {% endfor%}"
+    become: yes
+
+  - name: Write to fstab
+    lineinfile:
+      dest: '/etc/fstab'
+      line: "{{ item }}"
+    with_items:
+      - "{% for i in result.results %} { i.stdout.strip().split(' ')[1] }} {{ i.tem.value }}\txfs\tdefaults\t1 1\n {% endfor %}"
+    become: yes
+
+  - name: Modify fstab parameters
+    replace:
+      path: '/etc/fstab'
+      regepxp: "{{ item }}"
+      replace:
+    with_items:
+      - '"'
+      - '^\s+'
+    become: yes
+
+  - name: mount disk
+    command: mount -a
+    become: yes
