@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus elasticsearch_exporter
+After=local-fs.target network-online.target network.target
+Wants=local-fs.target network-online.target network.target
+
+[Service]
+Type=notify
+User={{el_user}}
+Group={{el_user}}
+ExecStart=/usr/bin/{{es.exporter_name}} --es.all --es.indices --es.timeout=20s --web.listen-address=:16671 --web.telemetry-path=/node --es.uri=http://{{es.user}}:{{es.passwd}}@{{ansible_default_ipv4['address']}}:39900
+ExecStop= /usr/bin/killall {{es.exporter_name}}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

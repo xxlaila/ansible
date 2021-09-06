@@ -1,0 +1,84 @@
+---
+  - name: Create {{ name }} data dirctory
+    file:
+      path: "{{ item.value }}/{{ name }}"
+      state: directory
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+      mode: 0755
+    with_dict: "{{ disks_data }}"
+    become: yes
+
+  - name: Create Zookeeper data dirctory
+    file:
+      path: "{{ zk_dir }}/{{ item }}"
+      state: directory
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+      mode: 0755
+    with_items:
+      - logs
+    become: yes
+
+  - name: Copy {{ name }} Config file
+    template:
+      src: "{{ item }}"
+      dest: "/home/data/{{ name }}_{{ version }}/config/{{ item }}"
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+    with_items:
+      - zookeeper.properties
+      - server.properties
+    become: yes
+
+  - name: Copy zookeeper myid file
+    template:
+      src: myid.j2
+      dest: "{{ zk_dir }}/myid"
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+    when: inventory_hostname in groups['zookeeper']
+    become: yes
+
+  - name: Copy {{ name }} zookeeper boot start files
+    template:
+      src: "{{ item }}"
+      dest: "/usr/lib/systemd/system/{{ item }}"
+    with_items:
+      - kafka.service
+      - zookeeper.service
+    become: yes
+
+  - name: Edit zookeeper Startup Configuration File
+    template:
+      src: "{{ item }}"
+      dest: "/home/data/{{ name }}_{{ version }}/bin/{{ item }}"
+    with_items:
+      - "zookeeper-server-start.sh"
+    when: ansible_play_hosts | intersect(groups['zookeeper'])
+    become: yes
+
+  - name:  Edid {{ name }} Startup Configuration File
+    template:
+      src: "{{ item }}"
+      dest: "/home/data/{{ name }}_{{ version }}/bin/{{ item }}"
+    with_items:
+      - "kafka-server-start.sh"
+    when: ansible_play_hosts | intersect(groups['kafka'])
+    become: yes
+
+  - name: Start zookeeper service
+    systemd:
+      name: zookeeper
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes
+
+  - name: start {{ name }} service
+    systemd:
+      name: kafka
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes

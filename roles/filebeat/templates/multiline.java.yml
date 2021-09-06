@@ -1,0 +1,19 @@
+- type: log
+  paths:
+    - {{ pro_dir }}/logs/*/*.multiline.java.log
+    - {{ pro_dir }}/logs/*/*.multiline.java.log.*
+  fields:
+    type: javadaemon
+  fields_under_root: true
+  #multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}|^\#\#\#'
+  multiline.negate: true
+  multiline.match: after
+  max_bytes: 1024000
+  ignore_older: 5m
+  tail_files: false
+  close_older: 30m
+  force_close_files: true
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

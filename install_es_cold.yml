@@ -1,0 +1,21 @@
+---
+  - hosts: "{{ run | default('cold-data') }}"
+    user: "{{ user }}"
+    roles:
+      - system
+      - disks
+      - elk
+    vars_files:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+    vars:
+      - el_memen: 31
+      - disks_data:
+          /dev/vdb: /data
+          /dev/vdc: /data1
+          /dev/vdd: /data2
+          /dev/vde: /data3
+          /dev/vdf: /data4
+          /dev/vdg: /data5
+          /dev/vdh: /data6
+          /dev/vdi: /data7

@@ -1,10 +1,10 @@
 ---
-  - name: Create {{ el_user }} data directory
+  - name: Create {{ name }} data directory
     file:
       path: "{{ item.value }}"
       state: directory
-      owner: "{{ el_user }}"
-      group: "{{ el_user }}"
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
       mode: 0755
     with_dict: "{{ disks_data }}"
     become: yes
@@ -22,7 +22,6 @@
       number: 1
       state: present
       label: gpt
-
     register: status
     with_dict: "{{ disks_data }}"
     become: yes
@@ -33,17 +32,18 @@
       dev: "{{ item.item.key }}1"
       force: yes
     with_items: "{{ status.results }}"
+    ignore_errors: yes
     become: yes
 
   - name: disk uuid
-    command: blkid "{{ item.key }}1"
+    command: /usr/sbin/blkid "{{ item.key }}1"
     with_dict: "{{ disks_data }}"
     register: result
     become: yes
 
   - name: print disk uuid or disk path
     debug:
-      msg: "{% for i in result.results %} {{ i.stdout.split(' ')[1] }} {{ i.tem.value }} {% endfor%}"
+      msg: "{% for i in result.results %} {{ i.stdout.split(' ')[1] }} {{ i.item.value }} {% endfor%}"
     become: yes
 
   - name: Write to fstab
@@ -51,7 +51,7 @@
       dest: '/etc/fstab'
       line: "{{ item }}"
     with_items:
-      - "{% for i in result.results %} {{ i.stdout.strip().split(' ')[1] }} {{ i.tem.value }}\txfs\tdefaults\t1 1\n {% endfor %}"
+      - "{% for i in result.results %} {{ i.stdout.strip().split(' ')[1] }} {{ i.item.value }}\txfs\tdefaults,noatime,nofail\t0 0\n {% endfor %}"
     become: yes
 
   - name: Modify fstab parameters
@@ -66,4 +66,9 @@
 
   - name: mount disk
     command: mount -a
+    become: yes
+
+  - name: Give {{ name }} permission
+    shell: "sudo chown -R {{ webuser }}:{{ webuser }} /data*"
+    when: inventory_hostname in groups['cold-data'] or inventory_hostname in groups['hot-data']
     become: yes

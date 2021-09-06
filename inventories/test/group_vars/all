@@ -1,5 +1,12 @@
 ---
   env: test
+  user: xxlaila
+  port: 56358
 
+  webuser: wwwuser
   supervisord_name: supervisord
   supervisord_dir: /etc/supervisord.d/
+
+  pro_dir: /home/data
+
+  open_url: http://ops-file.xxlaila.cn

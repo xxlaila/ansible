@@ -1,0 +1,20 @@
+- type: log
+  paths:
+    - /home/data/logs/*/info.log
+    - /home/data/logs/*/warn.log
+    - /home/data/logs/*/error.log
+    - /home/data/logs/*/info.log.*
+    - /home/data/logs/*/warn.log.*
+    - /home/data/logs/*/error.log.*
+  fields:
+    type: daemon
+  fields_under_root: true
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}|^\['
+  multiline.negate: true
+  multiline.match: after
+  max_bytes: 1024000
+  ignore_older: 5m
+  tail_files: false
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

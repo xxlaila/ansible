@@ -6,7 +6,6 @@
 [cold-data]
 172.16.16.232 hostname=elk-cold-data-01
 
-
 [master]
 172.16.24.7 hostname=elk-master-01  clusterName=elk-master-01.xxlaila.cn
 172.16.24.11 hostname=elk-master-02 clusterName=elk-master-02.xxlaila.cn
@@ -15,8 +14,23 @@
 [ingest]
 172.16.24.16 hostname=elk-ingest-01
 
+[exporter]
+172.16.24.12 hostname=elk-master-03 clusterName=elk-master-03.xxlaila.cn
+
+[certs]
+172.16.24.7 hostname=elk-master-01  clusterName=elk-master-01.xxlaila.cn
+
 [Allnode:children]
 master
 hot-data
 cold-data
 ingest
+exporter
+
+[data:children]
+hot-data
+cold-data
+
+[all:vars]
+ansible_ssh_user="{{ user }}"
+ansible_ssh_port="{{ port }}"

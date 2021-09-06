@@ -1,0 +1,22 @@
+---
+  - hosts: "{{ run | default('kafka') }}"
+    user: "{{ user }}"
+    roles:
+      - system
+      - disks
+      - kafka
+    vars_files:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+    vars:
+      - kfk_memen: 31
+      - zk_memen: 4
+      - disks_data:
+          /dev/vdb: /data
+          /dev/vdc: /data1
+          /dev/vdd: /data2
+          /dev/vde: /data3
+          /dev/vdf: /data4
+          /dev/vdg: /data5
+          /dev/vdh: /data6
+          /dev/vdi: /data7

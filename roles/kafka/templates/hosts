@@ -1,0 +1,10 @@
+127.0.0.1 {{ ansible_hostname }}
+127.0.0.1 localhost.localdomain localhost
+127.0.0.1 localhost4.localdomain4 localhost4
+{{ ansible_default_ipv4.address }}  {{ ansible_hostname }}
+
+{% for host in groups['kafka'] %}
+{{ host }}  {{ hostvars[host].domainname }}
+{% if not loop.last %}
+{% endif %}
+{% endfor %}

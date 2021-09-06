@@ -1,16 +1,25 @@
-- include: elkNotName.yml
+#- include: elkNotName.yml
+#  when: inventory_hostname not in groups['exporter']
+- include: check_process.yml
+  when: inventory_hostname not in groups['exporter']
 
-- include: es_install.yml
+#- include: es_install.yml
+#  when: inventory_hostname not in groups['exporter'] and ports.stdout == '0'
 
-- include: im_disk.yml
-  when: inventory_hostname in groups['master'] or inventory_hostname in groups['ingest']
+- include: install.yml
+  when: inventory_hostname not in groups['exporter'] and ports.stdout == '0'
 
-- include: data_disk.yml
-  when: inventory_hostname in groups['hot-data']
-
-- include: cold_disk.yml
-  when: inventory_hostname in groups['cold-data']
+#- include: data_disk_par.yml
+#  when: inventory_hostname not in groups['exporter'] and ports.stdout == '0'
 
 - include: es_config.yml
+  when: inventory_hostname not in groups['exporter'] and ports.stdout == '0'
 
 - include: check_health.yml
+  when: inventory_hostname not in groups['exporter'] and ports.stdout == '0'
+
+- include: es_xpack.yml
+  when: inventory_hostname not in groups['exporter']
+
+#- include: es_moin_prom.yml
+#  when: inventory_hostname in groups['exporter']

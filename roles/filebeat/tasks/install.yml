@@ -1,0 +1,31 @@
+---
+  - name: Uninstall {{ project_name }} rpm
+    yum:
+      name: "{{ project_name}}"
+      state: absent
+    become: yes
+
+  - name: Delete {{ project_name }} config
+    file:
+      path: "/etc/{{ project_name }}"
+      state: absent
+    become: yes
+
+  - name: Yum {{ project_name }} install package
+    yum:
+      name: "{{ open_url }}/{{ project_name }}/{{ project_name }}-{{ version }}.rpm"
+      state: present
+    become: yes
+
+  - name: Create {{ project_name }} data and logs directory
+    file:
+      name: "{{ item }}"
+      state: directory
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+      mode: 0755
+    with_items:
+      - "{{ path }}/{{ project_name }}/logs"
+      - "{{ path }}/{{ project_name }}/newdata"
+      - "/etc/{{ project_name }}/conf.d"
+    become: yes

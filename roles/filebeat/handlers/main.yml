@@ -1,0 +1,8 @@
+---
+  - name: restart {{ project_name }}
+    systemd:
+      name: filebeat
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes

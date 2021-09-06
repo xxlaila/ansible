@@ -1,0 +1,12 @@
+[kafka]
+10.138.65.88  domainname=kfk-elk-pre-01.xxlaila.cn   broker=0
+10.138.65.89  domainname=kfk-elk-pre-02.xxlaila.cn   broker=1
+10.138.65.90  domainname=kfk-elk-pre-03.xxlaila.cn   broker=2
+
+[zookeeper]
+10.138.65.88  domainname=kfk-elk-pre-01.xxlaila.cn   zookeeper_id=1
+10.138.65.89  domainname=kfk-elk-pre-02.xxlaila.cn   zookeeper_id=2
+10.138.65.90  domainname=kfk-elk-pre-03.xxlaila.cn   zookeeper_id=3
+
+[zks:children]
+zookeeper

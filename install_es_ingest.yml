@@ -1,0 +1,14 @@
+---
+  - hosts: "{{ run | default('ingest') }}"
+    user: "{{ user }}"
+    roles:
+      - system
+      - disks
+      - elk
+    vars_files:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+    vars:
+      - el_memen: 31
+      - disks_data:
+          /dev/vdb: /home/data

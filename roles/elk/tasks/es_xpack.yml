@@ -1,0 +1,71 @@
+---
+  - name: Create {{ el_user }} certs direcory
+    file:
+      path: /etc/{{ el_user }}/certs
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+    when: ports.stdout == '0'
+    become: yes
+
+  - name: Generate xpack certificate
+    shell: /usr/share/{{ el_user }}/bin/{{ el_user }}-certutil cert -out /etc/{{ el_user }}/certs/elastic-certificates.p12 -pass ""
+    when: inventory_hostname in groups['certs'] and ports.stdout == '0'
+    become: yes
+
+  - name: Get remote file to this level
+    fetch:
+      src: /etc/{{ el_user }}/certs/elastic-certificates.p12
+      dest: /tmp/elastic-certificates.p12
+      flat: yes
+    when: inventory_hostname in groups['certs']
+    become: yes
+
+  - name: Copy certs files go to server
+    copy:
+      dest: /tmp/elastic-certificates.p12
+      src: /etc/{{ el_user }}/certs/elastic-certificates.p12
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+    when: ports.stdout == '0'
+    become: yes
+
+#  - name: Add certificate and mailbox configuration
+#    lineinfile:
+#      dest: /etc/{{ el_user }}/{{ el_user }}.yml
+#      line: "{{ item }}"
+#    with_items:
+#      - 'xpack.security.enabled: true'
+#      - 'xpack.security.transport.ssl.enabled: true'
+#      - 'xpack.security.transport.ssl.verification_mode: certificate'
+#      - 'xpack.security.transport.ssl.keystore.path: certs/elastic-certificates.p12'
+#      - 'xpack.security.transport.ssl.truststore.path: certs/elastic-certificates.p12'
+#      - 'xpack.notification.email.account:'
+#      - '    exchange_account:'
+#      - '      profile: xl_root'
+#      - '      email_defaults:'
+#      - "        from: 'tech.sys <tech.sys@xl_root.cn>'"
+#      - '      smtp:'
+#      - '          auth: true'
+#      - '          starttls.enable: true'
+#      - '          host: smtp.exmail.qq.com'
+#      - '          port: 465'
+#      - '          user: tech.sys@xl_root.cn'
+#    ignore_errors: True
+#    notify: restart elasticsearch
+#    become: yes
+#
+  - name: Call the flush of meta module_handlers
+    meta: flush_handlers
+    when: ansible_play_hosts | intersect(groups['Allnode'])
+    become: yes
+
+#  - name: Set {{ el_user }} password
+#    shell: echo "{{ es.pwd }}"|/usr/share/{{ el_user }}/bin/{{ el_user }}-setup-passwords interactive
+#    become: yes
+#
+#  - name: Set mailbox password keystore
+#    shell: echo "{{ es_ssl_keystore_password }}" | /usr/share/{{ el_user }}/bin/{{ el_user }}-keystore add 'xpack.notification.email.account.exchange_account.smtp.secure_password'
+#    no_log: True
+#    become: yes

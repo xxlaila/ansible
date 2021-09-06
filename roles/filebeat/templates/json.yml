@@ -1,0 +1,17 @@
+- type: log
+  paths:
+    - /home/data/logs/*/*.json.log
+    - /home/data/logs/*/*.json.log.*
+  fields:
+    type: json
+  fields_under_root: true
+  ignore_older: 5m
+  max_bytes: 1024000
+  tail_files: false
+  close_older: 30m
+  force_close_files: true
+  json.overwrite_keys: true
+  json.keys_under_root: false
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

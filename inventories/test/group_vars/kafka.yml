@@ -1,0 +1,11 @@
+---
+
+  name: kafka
+  version: 2.12-2.1.1
+  es_port: 9200
+
+  zk_dir: /data/zookeeper
+  zk_client_port: 2181
+
+  zk_leader_port: 2888
+  zk_election_port: 3888

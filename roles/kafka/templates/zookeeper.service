@@ -1,0 +1,15 @@
+[Unit]
+Description=Zookeeper service
+After=network.target
+
+[Service]
+Type=simple
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/java"
+User=root
+Group=root
+ExecStart={{ pro_dir }}/{{ name }}_{{ version }}/bin/zookeeper-server-start.sh {{ pro_dir }}/{{ name }}_{{ version }}/config/zookeeper.properties
+ExecStop={{ pro_dir }}/{{ name }}_{{ version }}/bin/zookeeper-server-stop.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

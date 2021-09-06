@@ -1,0 +1,5 @@
+- targets:
+  {% for host in groups['Allnode'] %}"{{ hostvars }}" - {% if not loop.last %}:39900\n{% endif %}{% endfor %}
+  labels:
+    service: elasticsearch
+    cluster: dlink-uat

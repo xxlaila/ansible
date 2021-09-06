@@ -1,7 +1,11 @@
 127.0.0.1 {{ hostname }}
 127.0.0.1 localhost.localdomain localhost
 127.0.0.1 localhost4.localdomain4 localhost4
+{{ ansible_default_ipv4.address }}  {{ hostname }}
 
-172.16.24.7 elk-master-01.xxlaila.cn
-172.16.24.11 elk-master-02.xxlaila.cn
-172.16.24.12 elk-master-03.xxlaila.cn
+{% for host in groups['master'] %}
+{{ host }}  {{ hostvars[host].clusterName }}
+{% if not loop.last %}
+{% endif %}
+{% endfor %}
+

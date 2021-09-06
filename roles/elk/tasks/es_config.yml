@@ -1,14 +1,32 @@
 ---
-  - name: Create {{ el_user }} data and logs
+  - name: Create logs diretory
     file:
-      name: "{{ item }}"
+      name: "{{ pro_dir }}/logs"
+      state: directory
+      owner: "{{ el_user }}"
+      mode: 0755
+    when: ansible_play_hosts | intersect(groups['Allnode'])
+    become: yes
+
+  - name: Create {{ cluster_name }} logs directory
+    file:
+      name: "{{ pro_dir }}/logs/{{ cluster_name }}"
       state: directory
       owner: "{{ el_user }}"
       group: "{{ el_user }}"
       mode: 0755
-    with_items:
-      - "{{ path.logs }}"
-      - "{{ path.data }}"
+      recurse: yes
+    when: ansible_play_hosts | intersect(groups['Allnode'])
+    become: yes
+
+  - name: Create {{ el_user }} data
+    file:
+      name: "{{ pro_dir }}/{{ el_user }}"
+      state: directory
+      owner: "{{ el_user }}"
+      group: "{{ el_user }}"
+      mode: 0755
+    when: inventory_hostname in groups['master'] or inventory_hostname in groups['ingest']
     become: yes
 
   - name: Create {{ el_user }} data dirctory
@@ -18,7 +36,7 @@
       owner: "{{ el_user }}"
       group: "{{ el_user }}"
       mode: 0755
-      with_dict: "{{ disks_data }}"
+    with_dict: "{{ disks_data }}"
     when: inventory_hostname in groups['hot-data'] or inventory_hostname in groups['cold-data']
     become: yes
 
@@ -28,42 +46,26 @@
       dest: /etc/{{ el_user }}/{{ el_user }}.yml
       owner: "{{ el_user }}"
       group: "{{ el_user }}"
-    when: inventory_hostname in groups['master']
+    when: ansible_play_hosts | intersect(groups['Allnode'])
     become: yes
 
-  - name: Copy {{ el_user }} data node config files
-    template:
-      src: "hot_{{ el_user }}.yml"
-      dest: /etc/{{ el_user }}/{{ el_user }}.yml
-      owner: "{{ el_user }}"
-      group: "{{ el_user }}"
-    when: inventory_hostname in groups['hot-data']
-    become: yes
-
-  - name: Copy {{ el_user }} ingest config files
-    template:
-      src: "ing_{{ el_user }}.yml"
-      dest: /etc/{{ el_user }}/{{ el_user }}.yml
-      owner: "{{ el_user }}"
-      group: "{{ el_user }}"
-    when: inventory_hostname in groups['ingest']
-    become: yes
-
-  - name: Copy {{ el_user }} ingest config files
-    template:
-      src: "cold_{{ el_user }}.yml"
-      dest: /etc/{{ el_user }}/{{ el_user }}.yml
-      owner: "{{ el_user }}"
-      group: "{{ el_user }}"
-    when: inventory_hostname in groups['cold-data']
-    become: yes
-
-  - name: Edit {{ el_user }} Startup configuration file
+  - name: Add {{ el_user }} Startup Configuration File
     lineinfile:
       dest: /usr/lib/systemd/system/{{ el_user }}.service
       regexp: 'LimitMEMLOCK=infinity'
       insertafter: '^Type=notify'
       line: 'LimitMEMLOCK=infinity'
+    when: ansible_play_hosts | intersect(groups['Allnode'])
+    become: yes
+
+  - name: Edid {{ el_user }} Startup Configuration File
+    lineinfile:
+      dest: /usr/lib/systemd/system/{{ el_user }}.service
+      regexp: "{{ item.key }}"
+      line: "{{ item.vaule }}"
+    with_items:
+      - { 'key': 'LimitNOFILE=65535', 'vaule': 'LimitNOFILE=655350'}
+      - { 'key': 'LimitNPROC=4096', 'vaule': 'LimitNPROC=40960'}
     when: ansible_play_hosts | intersect(groups['Allnode'])
     become: yes
 
@@ -75,14 +77,20 @@
     with_items:
       - { 'key': '-Xms1g', 'vaule': '-Xms{{ el_memen }}g' }
       - { 'key': '-Xmx1g', 'vaule': '-Xmx{{ el_memen }}g' }
+    notify: restart elasticsearch
     when: ansible_play_hosts | intersect(groups['Allnode'])
     become: yes
 
-  - name: restart elasticsearch
-    systemd:
-      name: elasticsearch
-      enabled: yes
-      state: restarted
-      daemon_reload: yes
+  - name: Call the flush of meta module_handlers
+    meta: flush_handlers
     when: ansible_play_hosts | intersect(groups['Allnode'])
     become: yes
+
+#  - name: restart {{ el_user }}
+#    systemd:
+#      name: "{{ el_user }}"
+#      enabled: yes
+#      state: restarted
+#      daemon_reload: yes
+#    when: ansible_play_hosts | intersect(groups['Allnode'])
+#    become: yes

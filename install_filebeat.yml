@@ -1,0 +1,12 @@
+---
+  - hosts: "{{ project_name }}"
+    user: "{{ user }}"
+    vars_files:
+      - ./inventories/{{ env }}/group_vars/global.yml
+      - ./inventories/{{ env }}/group_vars/{{ project_name }}.yml
+    roles:
+      - filebeat
+
+# ansible-playbook install_filebeat.yml -i inventories -e "project_name=base_filebeat" --tags=install
+# ansible-playbook install_filebeat.yml -i inventories -e "project_name=base_filebeat" --tags=update
+# ansible-playbook install_filebeat.yml -i inventories -e "project_name=base_filebeat" --tags=config

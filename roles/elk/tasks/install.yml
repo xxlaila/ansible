@@ -1,0 +1,12 @@
+---
+  - name: Yum install {{ el_user }} package
+    yum:
+      name: "{{ open_url }}/{{ el_user }}/{{ el_user }}-{{ version }}.rpm"
+      state: installed
+    become: yes
+
+  - name: Copy hosts files /etc/hosts
+    template:
+      src: "hosts"
+      dest: /etc/hosts
+    become: yes

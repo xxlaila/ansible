@@ -1,0 +1,16 @@
+---
+  - name: restart zookeeper
+    systemd:
+      name: zookeeper
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes
+
+  - name: restart kafka
+    systemd:
+      name: kafka
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes

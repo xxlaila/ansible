@@ -1,0 +1,45 @@
+---
+  - name: Installing {{ es.exporter_name }} plug-in
+    get_url:
+      name: "{{ es.exporter_url }}/{{ es.exporter_version }}-{{ es.exporter_name }}.tar.gz"
+      dest: /opt/
+      validate_certs: no
+    become: yes
+
+  - name: Decompress {{ es.exporter_name }} compressed package
+    unarchive:
+      src: "{{ es.exporter_version }}-{{ es.exporter_name }}.tar.gz"
+      dest: /opt/
+      copy: no
+    become: yes
+
+  - name: Mobile {{ es.exporter_name }} module
+    shell: cp /home/{{ es.exporter_name }}-{{ es.exporter_version }}/{{ es.exporter_name }} /usr/bin/
+    become: yes
+
+  - name: Copy {{ es.exporter_name }} boot start files
+    templates:
+      src: "{{ es.exporter_name }}.service"
+      dest: /usr/lib/systemd/system/
+    become: yes
+
+  - name: Start-up {{ es.exporter_name }}
+    systemd:
+      name: {{ es.exporter_name }}
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    when: ansible_play_hosts | intersect(groups['exporter'])
+    become: yes
+
+  - name: Check if the {{ es.exporter_name }} port is normal
+    wait_for:
+      host: "0.0.0.0"
+      port: "{{ item }}"
+      delay: 10
+      timeout: 30
+    with_items: ["16671"]
+
+  - debug:
+      msg:
+        - "Elasticsearch monitoring installation complete"

@@ -1,0 +1,37 @@
+---
+  - name: Download {{ name }} file
+    get_url:
+      url: "{{ open_url }}/{{ name }}/{{ name }}_{{ version }}.tgz"
+      dest: /tmp/
+      mode: 0644
+      force: yes
+      validate_certs: no
+    become: yes
+
+  - name: Create data
+    file:
+      path: /home/data/
+      owner: "{{ webuser }}"
+      group: "{{ webuser }}"
+      mode: 0755
+    become: yes
+
+  - name: Unarchive {{ name }}_{{ version }}.tgz
+    unarchive:
+      src: "/tmp/{{ name }}_{{ version }}.tgz"
+      dest: /home/data/
+      copy: no
+      mode: 0755
+    become: yes
+
+  - name: Delete {{ name }} rpm package
+    file:
+      path: "/tmp/{{ name }}_{{ version }}.tgz"
+      state: absent
+    become: yes
+
+  - name: Copy hosts files /etc/hosts
+    template:
+      src: "hosts"
+      dest: /etc/hosts
+    become: yes

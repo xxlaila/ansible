@@ -1,0 +1,28 @@
+- type: log
+  paths:
+    - {{ pro_dir }}/logs/*/*.logstash_json
+  fields:
+    type: {% if env == 'stg' or env == 'pre' %}access{% else %}access{% endif %}
+
+{% if appid.split("-")[0] | lower == 'risk' and env == 'prd' %}
+    topic: {{ risk_topic.access }}
+{% elif appid.split("-")[0] | lower == 'bme' and env == 'prd' %}
+    topic: {{ bme_topic.access }}
+{% elif env == 'stg' or env == 'pre' %}
+{% else %}
+    topic: {{ topic.access }}
+{% endif %}
+{% if env == 'gra' %}
+    index: gra
+{% elif env == 'dev' %}
+    index: dev
+{% endif %}
+  fields_under_root: true
+  ignore_older: 5m
+  tail_files: false
+  max_bytes: 1024000
+  close_older: 30m
+  force_close_files: true
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

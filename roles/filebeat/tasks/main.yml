@@ -1,16 +1,5 @@
-block:
-    - name: copy elasticsearch rpm
-      copy:
-        src: "../files/{{ el_user }}-{{ el_version }}.rpm"
-        dest: "/tmp/{{ el_user }}-{{ el_version }}.rpm"
-    - name: install elasticsearch
-      yum:
-        name: "/tmp/{{ el_user }}-{{ el_version }}.rpm"
-        state: installed
-    become: yes
+- include: install.yml
+#- include: oldclean.yml
+- include: config.yml
 
-  - name: Delete {{ el_user }} rpm package
-    file:
-      path: "/tmp/{{ el_user }}-{{ el_version }}.rpm"
-      state: absent
-    become: yes
+

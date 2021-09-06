@@ -1,0 +1,8 @@
+---
+  - name: Check that the {{ el_user }} Process exists
+    shell: netstat -ntlp|grep {{ es_port }}|wc -l
+    register: ports
+    become: yes
+
+  - name: show ports vars
+    debug: var=ports.stdout verbosity=0

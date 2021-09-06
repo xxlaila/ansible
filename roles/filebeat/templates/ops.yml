@@ -1,0 +1,16 @@
+- type: log
+  paths:
+    - {{ pro_dir }}/logs/*/*.ops.log
+    - {{ pro_dir }}/logs/*/*.ops.log.*
+  fields:
+    type: json
+  fields_under_root: true
+  ignore_older: 5m
+  json.keys_under_root: true
+  tail_files: false
+  max_bytes: 1024000
+  close_older: 30m
+  force_close_files: true
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

@@ -5,7 +5,7 @@
       port: "{{ item }}"
       delay: 10
       timeout: 30
-    with_items: ["39900"]
+    with_items: ["{{ es_port }}"]
 
   - debug:
       msg:

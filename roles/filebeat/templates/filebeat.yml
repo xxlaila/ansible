@@ -1,0 +1,19 @@
+### 输出到logstash ###
+output.logstash:
+  hosts: [{% for midd in midds_ip %}"{{ midd }}:{{ filebeat_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+
+  loadbalance: true
+  ttl: 60s
+### 日志配置 ####
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: {{ path }}/{{ project_name }}/logs
+  name: {{ project_name }}
+  keepfiles: 7
+  permissions: 0644
+### 采集配置导入 ####
+filebeat.config.inputs:
+  enabled: true
+  path: conf.d/*.yml
+max_procs: 1

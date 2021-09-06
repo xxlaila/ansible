@@ -1,0 +1,10 @@
+---
+  project_name: filebeat
+  version: 7.8.1-x86_64
+
+  path: /home/data
+
+  filebeat_port: 5044
+
+  midds_ip:
+    - logfilter.xxlaila.cn

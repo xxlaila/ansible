@@ -1,0 +1,18 @@
+- type: log
+  paths:
+    - {{ pro_dir }}/logs/*/*.multiline.log
+    - {{ pro_dir }}/logs/*/*.multiline.log.*
+  fields:
+    type: phpdaemon
+  fields_under_root: true
+  multiline.pattern: '\$\$\$$'
+  multiline.negate: true
+  multiline.match: before
+  ignore_older: 5m
+  tail_files: false
+  max_bytes: 1024000
+  close_older: 30m
+  force_close_files: true
+  processors:
+    - drop_fields:
+        fields: ['input','offset','prospector']

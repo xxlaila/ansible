@@ -1,0 +1,11 @@
+---
+  - name: kill old {{ project_name }} process
+    shell: /usr/bin/skill filebeat
+    become: yes
+
+  - name: delete /etc/rc.local filebeat
+    lineinfile:
+      path: /etc/rc.local
+      regex: '^sudo -u wwwuser /bin/sh /home/data/filebeat/start.sh'
+      state: absent
+    become: yes
