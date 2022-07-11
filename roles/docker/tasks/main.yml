@@ -1,0 +1,50 @@
+---
+  - name: Uninstall old versions
+    yum:
+      name: ["docker", "docker-client", "docker-client-latest", "docker-common", "docker-latest", "docker-latest-logrotate", "docker-logrotate", "docker-engine", "podman", "runc"]
+      state: absent
+    become: yes
+
+  - name: Set up the repository
+    block:
+      - name: Install yum-utils
+        yum:
+          name: yum-utils
+          state: present
+      - name: install add yum-config-manager
+        command: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    become: yes
+
+  - name: Install Docker Engine
+    yum:
+      name: ["docker-ce", "docker-ce-cli", "containerd.io", "docker-compose-plugin"]
+      state: present
+    become: yes
+
+  - name: Start Docker
+    systemd:
+      name: docker
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes
+
+  - name: Install epel-release
+    yum:
+      name: epel-release
+      state: present
+    become: yes
+
+  - name: Install  python3-pip
+    yum:
+      name: python3-pip
+      state: present
+    become: yes
+
+  - name: Upgrade pip
+    command: pip3 install --upgrade pip
+    become: yes
+
+  - name: Install docker-compose
+    command: pip3 install docker-compose
+    become: yes
