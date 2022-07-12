@@ -1,4 +1,8 @@
 ---
+  - name: Yum update
+    command: yum update
+    become: yes
+
   - name: System kernel optimization
     template: src="99-sysctl.conf" dest="/etc/sysctl.d/99-sysctl.conf"
     become: yes
@@ -27,7 +31,11 @@
     become: yes
 
   - name: sysctl limits.d files
-    command: sysctl -p "/etc/security/limits.d/20-nproc.conf"
+    command: sysctl -p "/etc/security/limits.d/20-nofile.conf"
+    become: yes
+
+  - name: Add epel-release.noarch
+    command: yum -y install epel-release.noarch
     become: yes
 
   - name: install system rpm
@@ -42,9 +50,31 @@
     template: src="./root/.bashrc" dest="/root/" mode=0644 owner=root group=root
     become: yes
 
-  - name
-  -
-
   - name: push login info
     template: src="motd" dest="/etc/motd"
+    become: yes
+
+  - name: Stop postfix
+    systemd:
+      name: postfix
+      enabled: no
+      state: stop
+      daemon_reload: yes
+    ignore_errors: yes
+    become: yes
+
+  - name: Stop firewalld
+    systemd:
+      name: firewalld
+      enabled: no
+      state: stop
+      daemon_reload: yes
+    ignore_errors: yes
+    become: yes
+
+  - name: Yum remove firewalld
+    yum:
+      name: firewalld
+      state: absent
+    ignore_errors: yes
     become: yes
