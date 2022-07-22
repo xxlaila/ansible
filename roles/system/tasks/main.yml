@@ -1,6 +1,6 @@
 ---
   - name: Yum update
-    command: yum update
+    command: yum -y update
     become: yes
 
   - name: System kernel optimization
