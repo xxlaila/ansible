@@ -1,16 +1,16 @@
 ---
   - name: Copy node_exporter to node
     copy:
-      src: ../files/node_exporter
-      dest: /usr/sbin/node_exporter
+      src: "../files/node_exporter"
+      dest: "/usr/sbin/node_exporter"
       owner: root
       group: root
       mode: 0775
     become: yes
 
   - name: Copy start file
-    templates:
-      name: node_exporter.service
+    template:
+      src: node_exporter.service
       dest: /usr/lib/systemd/system/node_exporter.service
     become: yes
 

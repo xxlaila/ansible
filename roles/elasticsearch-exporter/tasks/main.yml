@@ -1,0 +1,25 @@
+---
+  - name: Copy elasticsearch_exporter exec files
+    copy:
+      src: "../files/elasticsearch_exporter"
+      dest: "/usr/sbin/elasticsearch_exporter"
+      owner: root
+      group: root
+      mode: 0775
+    become: yes
+
+  - name: Copy start file
+    template:
+      src: elasticsearch_exporter.service
+      dest: /usr/lib/systemd/system/elasticsearch_exporter.service
+      owner: root
+      group: root
+    become: yes
+
+  - name: Start elasticsearch_exporter
+    systemd:
+      name: elasticsearch_exporter
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    become: yes

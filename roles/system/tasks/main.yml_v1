@@ -1,0 +1,80 @@
+---
+  - name: Yum update
+    command: yum -y update
+    become: yes
+
+  - name: System kernel optimization
+    template: src="99-sysctl.conf" dest="/etc/sysctl.d/99-sysctl.conf"
+    become: yes
+  - name: Effective in time
+    command: /usr/sbin/sysctl -p /etc/sysctl.d/99-sysctl.conf
+    become: yes
+
+  - name: selinux config file push
+    template: src="selinux" dest="/etc/selinux/config"
+    become: yes
+  - name: check selinux status
+    command: /sbin/getenforce
+    register: selinux_status
+    become: yes
+  - name: selinux disable
+    command: /sbin/setenforce 0
+    become: yes
+    when: selinux_status.stdout == "Enforcing"
+
+  - name: ulimit open file Effective in time
+    command: sysctl -w "fs.file-max=655360"
+    become: yes
+
+  - name: ulimit config file push
+    template: src="20-nofile.conf" dest="/etc/security/limits.d/"
+    become: yes
+
+  - name: sysctl limits.d files
+    command: sysctl -p "/etc/security/limits.d/20-nofile.conf"
+    become: yes
+
+  - name: Add epel-release.noarch
+    command: yum -y install epel-release.noarch
+    become: yes
+
+  - name: install system rpm
+    yum: name={{ system_rpm_list }} state=present
+    become: yes
+
+  - name: crontab config file
+    template: src="crontab" dest="/etc/"
+    become: yes
+
+  - name: push root bashrc
+    template: src="./root/.bashrc" dest="/root/" mode=0644 owner=root group=root
+    become: yes
+
+  - name: push login info
+    template: src="motd" dest="/etc/motd"
+    become: yes
+
+  - name: Stop postfix
+    systemd:
+      name: postfix
+      enabled: no
+      state: stop
+      daemon_reload: yes
+    ignore_errors: yes
+    become: yes
+
+  - name: Stop firewalld
+    systemd:
+      name: firewalld
+      enabled: no
+      state: stop
+      daemon_reload: yes
+    ignore_errors: yes
+    become: yes
+
+  - name: Yum remove firewalld
+    yum:
+      name: firewalld
+      state: absent
+    ignore_errors: yes
+    become: yes

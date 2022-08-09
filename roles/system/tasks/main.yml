@@ -42,6 +42,42 @@
     yum: name={{ system_rpm_list }} state=present
     become: yes
 
+  - name: Edit sshd_config files
+    template:
+      src: sshd_config
+      dest: /etc/sshd/sshd_config
+      mode: 0644
+      owner: root
+      group: root
+    become: yes
+
+  - name: mkdir .ssh
+    file:
+      path: /root/.ssh
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+    become: yes
+
+  - name: push key
+    template:
+      src: /root/.ssh/authorized_keys
+      dest: /root/.ssh/
+      owner: root
+      group: root
+      mode: 0600
+    become: yes
+
+  - name: Restart sshd service
+    systemd:
+      name: sshd
+      enabled: yes
+      state: restarted
+      daemon_reload: yes
+    ignore_errors: yes
+    become: yes
+
   - name: crontab config file
     template: src="crontab" dest="/etc/"
     become: yes
@@ -58,8 +94,8 @@
     systemd:
       name: postfix
       enabled: no
-      state: stop
-      daemon_reload: yes
+      state: stopped
+      daemon_reload: no
     ignore_errors: yes
     become: yes
 
@@ -67,8 +103,8 @@
     systemd:
       name: firewalld
       enabled: no
-      state: stop
-      daemon_reload: yes
+      state: stopped
+      daemon_reload: no
     ignore_errors: yes
     become: yes
 
@@ -77,4 +113,12 @@
       name: firewalld
       state: absent
     ignore_errors: yes
+    become: yes
+
+  - name: rsync ntpdata
+    shell: ntpdate cn.pool.ntp.org
+    become: yes
+
+  - name: time synchronization to hardware
+    shell: hwclock --systohc
     become: yes
