@@ -42,9 +42,9 @@
     become: yes
 
   - name: Upgrade pip
-    command: pip3 install --upgrade pip
+    command: pip3 --default-timeout=3000 install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
     become: yes
 
   - name: Install docker-compose
-    command: pip3 install docker-compose
+    command: pip3 --default-timeout=3000 install docker-compose -i https://pypi.tuna.tsinghua.edu.cn/simple
     become: yes
